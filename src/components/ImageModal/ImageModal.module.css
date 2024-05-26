@@ -1,0 +1,16 @@
+/* .imageModal {
+  padding: 0;
+  background: unset;
+  overflow: unset;
+  border: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
+
+.overlay {
+  inset: 0;
+  position: fixed;
+  background-color: rgba(129, 129, 129, 0.455);
+}
