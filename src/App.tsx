@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import css from "./App.module.css";
 import { requestImagesByQuery } from "./services/api";
 import SearchBar from "./components/SearchBar/SearchBar";
@@ -8,32 +8,47 @@ import ImageGallery from "./components/ImageGallery/ImageGallery";
 import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import ImageModal from "./components/ImageModal/ImageModal";
 
-function App() {
-  const [images, setImages] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+export interface IImage {
+  id: string;
+  urls: {
+    small: string;
+    regular: string;
+  };
+  alt_description: string;
+}
+
+interface Data {
+  results: IImage[];
+}
+
+const App: React.FC = () => {
+  const [images, setImages] = useState<IImage[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<IImage | null>(null);
 
   useEffect(() => {
-    async function fetchImagesByQuery() {
+    const fetchImagesByQuery = async () => {
       try {
         setIsLoading(true);
-        const data = await requestImagesByQuery(query, page);
-        if (page === 1) {
-          setImages(data.results);
-        } else {
-          setImages((prevImages) => [...prevImages, ...data.results]);
-        }
+        const data: Data = await requestImagesByQuery(query, page);
+        setImages((prevImages) => {
+          if (page === 1) {
+            return data.results;
+          } else {
+            return prevImages ? [...prevImages, ...data.results] : data.results;
+          }
+        });
         setIsError(false);
       } catch (error) {
         setIsError(true);
       } finally {
         setIsLoading(false);
       }
-    }
+    };
 
     if (query.length > 0) {
       fetchImagesByQuery();
@@ -42,7 +57,7 @@ function App() {
     }
   }, [query, page]);
 
-  const onSetSearchQuery = (searchQuery) => {
+  const onSetSearchQuery = (searchQuery: string) => {
     setQuery(searchQuery);
     setPage(1);
   };
@@ -51,9 +66,9 @@ function App() {
     setPage((prevPage) => prevPage + 1);
   };
 
-  const openModal = (imageUrl) => {
+  const openModal = (image: IImage) => {
     setModalIsOpen(true);
-    setSelectedImage(imageUrl);
+    setSelectedImage(image);
   };
 
   const closeModal = () => {
@@ -75,6 +90,6 @@ function App() {
       />
     </div>
   );
-}
+};
 
 export default App;

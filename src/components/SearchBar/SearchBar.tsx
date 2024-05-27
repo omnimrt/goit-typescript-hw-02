@@ -3,10 +3,14 @@ import css from "./SearchBar.module.css";
 import { Toaster } from "react-hot-toast";
 import { showError } from "../../services/toaster";
 
-const SearchBar = ({ onSubmit }) => {
-  const [topic, setTopic] = useState("");
+interface SearchBarProps {
+  onSubmit: (query: string) => void;
+}
 
-  const handleSubmit = (evt) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSubmit }) => {
+  const [topic, setTopic] = useState<string>("");
+
+  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     if (topic.trim() === "") {
       showError("Please enter a search query");
@@ -16,7 +20,7 @@ const SearchBar = ({ onSubmit }) => {
     console.log(topic);
   };
 
-  const handleChange = (evt) => {
+  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setTopic(evt.target.value); // Updating the topic state as user types
   };
 
